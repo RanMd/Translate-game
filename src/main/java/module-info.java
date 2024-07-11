@@ -17,4 +17,5 @@ module com {
     exports com.controllers;
     exports com.main;
     exports com.models;
+    exports com.controllers.components;
 }

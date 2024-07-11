@@ -4,12 +4,12 @@ import com.controllers.components.BombNode;
 import com.controllers.components.ExplosionNode;
 import com.controllers.components.PlayerNode;
 import com.controllers.util.Animations;
+import com.controllers.util.GameB;
 import com.controllers.util.StageFlow;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.svg.SVGGlyph;
 import com.jfoenix.svg.SVGGlyphLoader;
 import com.models.Category;
-import com.models.WordPair;
 import com.util.Constants;
 import fr.brouillard.oss.cssfx.CSSFX;
 import com.util.Assets;
@@ -39,15 +39,12 @@ import java.util.*;
 import java.util.function.UnaryOperator;
 
 public class GameBController implements Initializable {
-    private int currentPlayer;
+    private Stage myStage;
     private int survivors;
     private int grades;
     private int maxWordTurns;
     private int wordTurns = 0;
-    private PlayerNode[] players;
-    private Stage myStage;
-    private WordPair[] words;
-    private WordPair currentWord;
+    GameB game;
 
     private final Timeline timer = new Timeline();
     private final ExplosionNode explosion = new ExplosionNode();
@@ -122,8 +119,8 @@ public class GameBController implements Initializable {
 
     public void initController(Stage myStage, Map<String, Integer> gameValues, String[] playerNames, Category category) {
         this.myStage = myStage;
-        words = category.getWordsArray();
-        initPLayers(playerNames, gameValues.get("lives"),gameValues.get("wordTurns"));
+        game = new GameB(createPlayers(playerNames, gameValues.get("lives")), category, gameValues.get("wordTurns"));
+        initPLayers(gameValues.get("wordTurns"));
         initTimer(gameValues.get("time"));
     }
 
@@ -132,28 +129,30 @@ public class GameBController implements Initializable {
 
         String[] names = new String[2];
 
-        for (int i = 0; i < names.length; i++) {
-            names[i] = "Jugador " + (i + 1);
-        }
+        for (int i = 0; i < names.length; i++) names[i] = "Jugador " + (i + 1);
 
-        words = category.getWordsArray();
-        initPLayers(names, 3,3);
+        game = new GameB(createPlayers(names, 3), category, 3);
+        initPLayers(3);
         initTimer(10);
     }
 
-    /* Init methods */
-    private void initPLayers(String[] playerNames, int maxLives,int maxWordTurns) {
-        this.maxWordTurns = maxWordTurns;
-        survivors = playerNames.length;
-        players = new PlayerNode[playerNames.length];
+    public PlayerNode[] createPlayers(String[] playerNames, int maxLives) {
+        final PlayerNode[] players = new PlayerNode[playerNames.length];
         for (int i = 0; i < playerNames.length; i++) {
             players[i] = new PlayerNode(playerNames[i], paneLabels, maxLives);
             playersPane.add(players[i]);
         }
+        return players;
+    }
 
-        grades = 360 / playerNames.length;
+    /* Init methods */
+    private void initPLayers(int maxWordTurns) {
+        this.maxWordTurns = maxWordTurns;
+        survivors = game.numPlayers();
 
-        switch (playerNames.length) {
+        grades = 360 / game.numPlayers();
+
+        switch (game.numPlayers()) {
             case 3:
                 playersPane.setStartAngle(30.0);
                 playersPane.setGap(215.0);
@@ -170,7 +169,7 @@ public class GameBController implements Initializable {
                 break;
         }
 
-        chosePlayer(players.length);
+        chosePlayer(game.numPlayers());
     }
 
     private void initEffects() {
@@ -181,7 +180,7 @@ public class GameBController implements Initializable {
     }
 
     private void initTimer(int time) {
-        timer.getKeyFrames().add(new javafx.animation.KeyFrame(Duration.seconds(time), e -> looseTurn()));
+        timer.getKeyFrames().add(new javafx.animation.KeyFrame(Duration.seconds(time), e -> loseTurn()));
     }
 
     private void initCounter() {
@@ -218,20 +217,18 @@ public class GameBController implements Initializable {
             rotations[i] = i * grades;
         }
 
-        currentPlayer = rnd.nextInt(numPlayers);
-        arrow.setRotate(rotations[currentPlayer]);
-        players[currentPlayer].setActive(true);
+        game.chosePlayer();
+        arrow.setRotate(rotations[game.getCurrentPlayer()]);
     }
 
     private void choseWord() {
-        currentWord = words[rnd.nextInt(words.length)];
-        wordLabel.setText(currentWord.getWord());
+        game.changeWord();
+        wordLabel.setText(game.getCurrentWord().getWord());
     }
 
-    private void looseTurn() {
+    private void loseTurn() {
+        game.playerLoseLife();
         explosion.explode();
-        players[currentPlayer].looseLife();
-        if (players[currentPlayer].isDead()) survivors--;
 
         if (survivors != 1) {
             nextPlayerTurn(true);
@@ -245,37 +242,20 @@ public class GameBController implements Initializable {
             return;
         }
 
-        final boolean isCorrect = currentWord.checkTranslate(input.getText());
-        players[currentPlayer].playAnswerAnimation(isCorrect);
+        final boolean isCorrect = game.getCurrentWord().checkTranslate(input.getText());
+        game.playerAnswered(isCorrect);
 
         if (!isCorrect) input.setText("");
         else nextPlayerTurn(false);
     }
 
-    private void nextPlayerTurn(boolean looseTurn) {
-        if (looseTurn) {
-            wordTurns++;
-            if (wordTurns == maxWordTurns) {
-                choseWord();
-                wordTurns = 0;
-            }
-        } else choseWord();
+    private void nextPlayerTurn(boolean loseTurn) {
+        game.nextPlayerTurn(loseTurn, this::choseWord);
 
         timer.playFromStart();
-        players[currentPlayer].setActive(false);
         input.setText("");
 
-        currentPlayer = (currentPlayer + 1) % players.length;
-
-        double rotation = grades;
-
-        while (players[currentPlayer].isDead()) {
-            rotation += grades;
-            currentPlayer = (currentPlayer + 1) % players.length;
-        }
-
-        players[currentPlayer].setActive(true);
-        rotate_arrow.setToAngle(arrow.getRotate() + rotation);
+        rotate_arrow.setToAngle(arrow.getRotate() + grades * game.getDeadSpaces());
         rotate_arrow.play();
 
         Assets.tickTackTrack.stop();
@@ -283,10 +263,6 @@ public class GameBController implements Initializable {
     }
 
     private void choseWinner() {
-        while (players[currentPlayer].isDead()) {
-            currentPlayer = (currentPlayer + 1) % players.length;
-        }
-
         stopComponents();
 
         wordLabel.setText("GANADOR!");
@@ -313,7 +289,7 @@ public class GameBController implements Initializable {
         btnMenu.setOnAction(e -> changeToMenu());
         btnExit.setOnAction(e -> Platform.exit());
 
-        stackGame.getChildren().add(players[currentPlayer].getWinnerCard());
+        stackGame.getChildren().add(game.getWinner().getWinnerCard());
         contInput.getChildren().addAll(btnRetry, btnMenu, btnExit);
         Assets.yeySound.play();
     }
@@ -338,13 +314,10 @@ public class GameBController implements Initializable {
         contInput.getChildren().add(input);
         stackGame.getChildren().remove(stackGame.getChildren().size() - 1);
 
-        for (PlayerNode player : players) {
-            player.reset();
-        }
+        game.reset();
         bomb.reset();
 
-        survivors = players.length;
-        chosePlayer(players.length);
+        chosePlayer(game.numPlayers());
         choseWord();
         initCounter();
     }
@@ -360,17 +333,13 @@ public class GameBController implements Initializable {
     }
 
     private void postInitPlayers() {
-        for (PlayerNode player : players) {
-            player.postInit(input);
-        }
+        game.postInitPlayers(input);
 
         initCounter();
     }
 
     public void posPlayerWord() {
-        for (PlayerNode player : players) {
-            Platform.runLater(player::posPlayerWord);
-        }
+        game.posWordPlayer();
     }
 
     private void changeToMenu() {

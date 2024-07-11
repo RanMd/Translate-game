@@ -1,19 +1,14 @@
 package com.controllers;
 
-import com.controllers.components.BombNode;
-import com.controllers.components.ExplosionNode;
-import com.controllers.components.PlayerNodeB;
 import com.controllers.util.Animations;
 import com.controllers.util.StageFlow;
-import com.jfoenix.svg.SVGGlyph;
-import com.jfoenix.svg.SVGGlyphLoader;
 import com.models.Category;
 import com.models.Player;
 import com.models.TranslateGame;
 import com.models.WordPair;
 import com.util.Assets;
+import com.util.Data;
 import javafx.animation.KeyFrame;
-import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -54,13 +49,7 @@ public class GameAController implements Initializable {
     private final ArrayList<String> names = new ArrayList<>();
     private final int MAX_CHARACTERS = 25;
     private final GaussianBlur gaussianBlur = new GaussianBlur();
-    private final SVGGlyph arrow = SVGGlyphLoader.getGlyph("custom.arrow");
     private final Random rnd = new Random();
-    private final BombNode bomb = new BombNode();
-    private final Timeline timer = new Timeline();
-    private final ExplosionNode explosion = new ExplosionNode();
-    private final RotateTransition rotate_arrow = new RotateTransition();
-    private PlayerNodeB playerWinner;
 
     @FXML
     private Label labelCategory;
@@ -97,7 +86,6 @@ public class GameAController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
         cantRounds = 0;
         labelTimer.setText("1");
         turn = 0;
@@ -105,15 +93,14 @@ public class GameAController implements Initializable {
         game = new TranslateGame();
         correctWord.setVisible(false);
 
-        windowGame.heightProperty().addListener((obs, oldVal, newVal) -> contInput.setMaxHeight(newVal.doubleValue() * 0.20)
-        );
+        windowGame.heightProperty().addListener((obs, oldVal, newVal) ->
+                contInput.setMaxHeight(newVal.doubleValue() * 0.20));
 
         contInput.widthProperty().addListener((obs, oldVal, newVal) ->
                 input.setMaxWidth(newVal.doubleValue() * 0.75));
 
-        UnaryOperator<TextFormatter.Change> filter = change -> {
-            String text = change.getText();
-
+        final UnaryOperator<TextFormatter.Change> filter = change -> {
+            final String text = change.getText();
             if (!text.matches("[a-zA-Z]*") || change.getControlNewText().length() > MAX_CHARACTERS)
                 return null;
 
@@ -132,13 +119,31 @@ public class GameAController implements Initializable {
         changePlayer();
     }
 
+    public void initController(Stage stage) {
+        this.myStage = stage;
+        this.maxRounds = 5;
+        this.categoryGame = Data.getRandomCategory();
+        final int players = rnd.nextInt(4) + 2;
+
+        for (int i = 0; i < players; i++) {
+            final Player jugador = new Player("Jugador " + (i + 1));
+            game.addPlayer(jugador);
+            names.add(jugador.getNombre());
+        }
+
+        labelCategory.setText(categoryGame.getName());
+        actPlayer();
+        word = categoryGame.getRandomWord();
+        actWord();
+    }
+
     public void initController(Stage stage, ArrayList<String> playersName, Category category, int maxRounds) {
         this.myStage = stage;
         this.maxRounds = maxRounds;
         this.categoryGame = category;
 
         for (String playerName : playersName) {
-            Player jugador = new Player(playerName);
+            final Player jugador = new Player(playerName);
             game.addPlayer(jugador);
             names.add(playerName);
         }
@@ -156,7 +161,6 @@ public class GameAController implements Initializable {
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
-
     }
 
 

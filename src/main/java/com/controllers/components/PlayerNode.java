@@ -171,7 +171,7 @@ public class PlayerNode extends StackPane {
         }
     }
 
-    public void looseLife() {
+    public void loseLife() {
         /* Animation */
         circleEffect.setVisible(true);
         circleEffect.setFill(RED);
@@ -228,10 +228,10 @@ public class PlayerNode extends StackPane {
                 playerWord.setText(newValue);
         });
 
-        posPlayerWord();
+        posWord();
     }
 
-    public void posPlayerWord() {
+    public void posWord() {
         final Bounds bounds = getLayoutBounds();
         final Point2D point = localToScene(0, 0);
         final Point2D panePoint = playerWord.getParent().localToScene(0,0);
