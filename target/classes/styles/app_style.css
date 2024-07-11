@@ -1,0 +1,15 @@
+.container {
+    -fx-bg-color: #222831;
+    -fx-font-color: #b3b3b3;
+
+    -fx-background-color: -fx-bg-color;
+}
+
+.content {
+    -fx-background-color: -fx-bg-color;
+    -fx-padding: 20;
+}
+
+* {
+    -fx-text-fill: -fx-font-color;
+}

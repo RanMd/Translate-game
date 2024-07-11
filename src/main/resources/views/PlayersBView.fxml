@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" minHeight="477.0" spacing="20.0" styleClass="container" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.controllers.PlayersBController">
+    <stylesheets>
+        <URL value="@../styles/players_style.css" />
+    </stylesheets>
+    <VBox spacing="10.0" styleClass="container-cat" VBox.vgrow="NEVER">
+        <Label text="CATEGORIAS">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Label>
+        <Label text="Selecciona la categoria de palabras con la que deseas jugar">
+            <font>
+                <Font name="System Italic" size="12.0" />
+            </font>
+        </Label>
+        <JFXComboBox fx:id="comboSelectCat" focusColor="#7c7c7c" minWidth="200.0" promptText="Selecciona una categoria" unFocusColor="#7c7c7c" />
+    </VBox>
+    <FlowPane fx:id="cardPane" alignment="CENTER" columnHalignment="CENTER" hgap="15.0" maxWidth="-Infinity" prefWidth="400.0" styleClass="player-cont" vgap="15.0" VBox.vgrow="ALWAYS" />
+    <HBox alignment="TOP_CENTER" spacing="20.0" VBox.vgrow="NEVER">
+        <JFXButton fx:id="addPlayerBtn" styleClass="btn" text="Añadir Jugador">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </JFXButton>
+        <JFXButton fx:id="playButton" disable="true" styleClass="btn" text="Jugar">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </JFXButton>
+    </HBox>
+</VBox>

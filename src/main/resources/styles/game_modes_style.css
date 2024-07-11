@@ -1,0 +1,48 @@
+@import "background.css";
+
+.container {
+    -fx-bg-color: #222831;
+    -fx-font-color: #b3b3b3;
+    -fx-bg-btn: #31363F;
+
+    -fx-background-color: radial-gradient(focus-distance 0%, center 50% 50%, radius 50%, -fx-bg-color1, -fx-bg-color2);
+}
+
+* {
+    -fx-text-fill: -fx-font-color;
+}
+
+.btn:selected
+{
+    -fx-background-color: lightblue;
+    -fx-text-fill: white;
+}
+
+.btn {
+    -fx-background-color: -fx-bg-btn;
+    -fx-background-radius: 5;
+    -fx-padding: 5 30;
+}
+
+.btn-icon {
+    -fx-background-color: -fx-bg-btn;
+    -fx-background-radius: 5;
+    -fx-padding: 5;
+}
+
+.btn-toggle {
+    -fx-padding: 10;
+}
+
+.btn-toggle .jfx-rippler{
+    -jfx-rippler-fill: -fx-font-color;
+}
+
+.title-container {
+    -fx-padding: 0 20;
+}
+
+.opt-container {
+    -fx-background-color: #262c36;
+    -fx-padding: 10 10;
+}

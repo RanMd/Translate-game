@@ -1,0 +1,34 @@
+.container {
+    -fx-bg-color: #222831;
+    -fx-bg-btn: #31363F;
+    -fx-font-color: #b3b3b3;
+    -fx-border: #b3b3b3;
+    -fx-border-error: red;
+    -fx-btn-font-color: #ffffff;
+
+    -fx-padding: 10 20;
+    -fx-background-color: -fx-bg-color;
+}
+
+* {
+    -fx-text-fill: -fx-font-color;
+}
+
+.text-field {
+    -fx-background-color: #31363F;
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-color: -fx-border;
+    -fx-border-style: solid;
+}
+
+.text-field.error {
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-color: -fx-border-error;
+    -fx-border-style: solid;
+}
+
+.btn {
+    -fx-text-fill: -fx-btn-font-color;
+    -fx-background-color: -fx-bg-btn;
+    -fx-padding: 5 30;
+}

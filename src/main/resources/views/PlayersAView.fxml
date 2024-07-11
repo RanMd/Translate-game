@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" minHeight="477.0" spacing="15.0" styleClass="container" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.controllers.PlayersAController">
+    <stylesheets>
+        <URL value="@../styles/players_style.css" />
+    </stylesheets>
+    <VBox alignment="CENTER" spacing="10.0" styleClass="container-category" VBox.vgrow="NEVER">
+        <Label text="Categoria seleccionada para esta partida:" />
+      <Label fx:id="labelCategory" text="CATEGORIA">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font></Label>
+    </VBox>
+   <VBox VBox.vgrow="ALWAYS">
+      <children>
+           <Label maxWidth="1.7976931348623157E308" styleClass="title" text="JUGADORES">
+               <font>
+                   <Font size="18.0" />
+               </font>
+           </Label>
+          <FlowPane fx:id="cardPane" alignment="CENTER" columnHalignment="CENTER" hgap="15.0" maxWidth="-Infinity" prefWidth="400.0" styleClass="player-cont" vgap="15.0" VBox.vgrow="ALWAYS" />
+      </children>
+   </VBox>
+    <HBox alignment="TOP_CENTER" spacing="20.0" VBox.vgrow="NEVER">
+        <JFXButton fx:id="addPlayerBtn" styleClass="btn" text="Añadir Jugador">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </JFXButton>
+        <JFXButton fx:id="playButton" disable="true" styleClass="btn" text="Jugar">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </JFXButton>
+    </HBox>
+</VBox>

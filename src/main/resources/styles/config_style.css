@@ -1,0 +1,60 @@
+@import "background.css";
+
+.container {
+    -fx-label-bg: #31363F;
+    -fx-bg-btn: #31363F;
+    -fx-font-color: #b3b3b3;
+    -fx-bg-input: #31363F;
+
+    -fx-background-color: radial-gradient(focus-distance 0%, center 50% 55%, radius 50%, -fx-bg-color1, -fx-bg-color2);
+    -fx-padding: 10 30;
+}
+
+.container-new {
+    -fx-label-bg: #31363F;
+    -fx-bg-btn: #31363F;
+    -fx-font-color: #b3b3b3;
+    -fx-bg-input: #31363F;
+
+    -fx-background-color: radial-gradient(focus-distance 0%, center 50% 50%, radius 50%, -fx-bg-color1, -fx-bg-color2);
+    -fx-padding: 20 30;
+}
+
+* {
+    -fx-text-fill: -fx-font-color;
+}
+
+.container .title {
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-color: #686868;
+    -fx-border-style: solid;
+    -fx-padding: 5 0;
+}
+
+.container .label-config {
+    -fx-background-color: -fx-label-bg;
+    -fx-padding: 8 15;
+}
+
+.inputBar {
+    -fx-text-fill: white;
+    -fx-border-width: 1px 1px 1px 1px;
+    -fx-border-radius: 5;
+    -fx-border-color: #686868;
+    -fx-background-color: -fx-bg-input;
+    -fx-padding: 5 10;
+    -fx-font-size: 14;
+}
+
+.btn {
+    -fx-background-color: -fx-bg-btn;
+    -fx-background-radius: 5;
+}
+
+.btn-icon {
+    -fx-background-color: -fx-bg-btn;
+    -fx-background-radius: 5;
+    -fx-padding: 5;
+}
+
+
