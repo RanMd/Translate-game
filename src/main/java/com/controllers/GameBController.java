@@ -40,18 +40,14 @@ import java.util.function.UnaryOperator;
 
 public class GameBController implements Initializable {
     private Stage myStage;
-    private int survivors;
     private int grades;
-    private int maxWordTurns;
-    private int wordTurns = 0;
-    GameB game;
+    private GameB game;
 
     private final Timeline timer = new Timeline();
     private final ExplosionNode explosion = new ExplosionNode();
     private final RotateTransition rotate_arrow = new RotateTransition();
 
     private final SVGGlyph arrow = SVGGlyphLoader.getGlyph("custom.arrow");
-    private final Random rnd = new Random();
     private final BombNode bomb = new BombNode();
 
     private final int MAX_CHARACTERS = 25;
@@ -120,7 +116,7 @@ public class GameBController implements Initializable {
     public void initController(Stage myStage, Map<String, Integer> gameValues, String[] playerNames, Category category) {
         this.myStage = myStage;
         game = new GameB(createPlayers(playerNames, gameValues.get("lives")), category, gameValues.get("wordTurns"));
-        initPLayers(gameValues.get("wordTurns"));
+        initPLayers();
         initTimer(gameValues.get("time"));
     }
 
@@ -132,7 +128,7 @@ public class GameBController implements Initializable {
         for (int i = 0; i < names.length; i++) names[i] = "Jugador " + (i + 1);
 
         game = new GameB(createPlayers(names, 3), category, 3);
-        initPLayers(3);
+        initPLayers();
         initTimer(10);
     }
 
@@ -146,10 +142,7 @@ public class GameBController implements Initializable {
     }
 
     /* Init methods */
-    private void initPLayers(int maxWordTurns) {
-        this.maxWordTurns = maxWordTurns;
-        survivors = game.numPlayers();
-
+    private void initPLayers() {
         grades = 360 / game.numPlayers();
 
         switch (game.numPlayers()) {
@@ -230,7 +223,7 @@ public class GameBController implements Initializable {
         game.playerLoseLife();
         explosion.explode();
 
-        if (survivors != 1) {
+        if (game.someSurvivor()) {
             nextPlayerTurn(true);
         } else choseWinner();
     }

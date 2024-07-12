@@ -34,6 +34,10 @@ public class GameB {
 
     public int getCurrentPlayer() { return currentPlayer; }
 
+    public boolean someSurvivor() {
+        return survivors > 1;
+    }
+
     public void chosePlayer() {
         currentPlayer = rnd.nextInt(players.length);
         players[currentPlayer].setActive(true);
