@@ -82,7 +82,7 @@ public class GameBController implements Initializable {
                     contInput.setMinHeight(newVal.doubleValue() * 0.12);
                     contWord.setMinHeight(newVal.doubleValue() * 0.085);
                     posPlayerWord();
-            }
+                }
         );
 
         windowGame.widthProperty().addListener((obs, oldVal, newVal) -> posPlayerWord());
@@ -143,9 +143,9 @@ public class GameBController implements Initializable {
 
     /* Init methods */
     private void initPLayers() {
-        grades = 360 / game.numPlayers();
+        grades = 360 / game.getNumPlayers();
 
-        switch (game.numPlayers()) {
+        switch (game.getNumPlayers()) {
             case 3:
                 playersPane.setStartAngle(30.0);
                 playersPane.setGap(215.0);
@@ -162,7 +162,7 @@ public class GameBController implements Initializable {
                 break;
         }
 
-        chosePlayer(game.numPlayers());
+        chosePlayer(game.getNumPlayers());
     }
 
     private void initEffects() {
@@ -310,7 +310,7 @@ public class GameBController implements Initializable {
         game.reset();
         bomb.reset();
 
-        chosePlayer(game.numPlayers());
+        chosePlayer(game.getNumPlayers());
         choseWord();
         initCounter();
     }

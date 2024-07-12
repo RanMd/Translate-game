@@ -9,13 +9,14 @@ import javafx.scene.control.TextField;
 import java.util.Random;
 
 public class GameB {
-    private int survivors;
-    private int maxWordTurns;
-    private int wordTurns;
-    private PlayerNode[] players;
-    private WordPair[] words;
+    private final PlayerNode[] players;
+    private final WordPair[] words;
+    private final Random rnd;
+    private final int maxWordTurns;
+
     private WordPair currentWord;
-    private Random rnd;
+    private int survivors;
+    private int wordTurns;
     private int currentPlayer;
     private int deadSpaces;
 
@@ -30,9 +31,27 @@ public class GameB {
         this.deadSpaces = 0;
     }
 
-    public WordPair getCurrentWord() { return currentWord; }
+    public WordPair getCurrentWord() {
+        return currentWord;
+    }
 
-    public int getCurrentPlayer() { return currentPlayer; }
+    public int getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public int getNumPlayers() {
+        return players.length;
+    }
+
+    public int getDeadSpaces() {
+        return deadSpaces;
+    }
+
+    public PlayerNode getWinner() {
+        calcDeadSpaces();
+        currentPlayer = (currentPlayer + deadSpaces) % players.length;
+        return players[currentPlayer];
+    }
 
     public boolean someSurvivor() {
         return survivors > 1;
@@ -47,22 +66,6 @@ public class GameB {
         if (wordTurns < maxWordTurns) {
             currentWord = words[rnd.nextInt(words.length)];
             wordTurns++;
-        }
-    }
-
-    public int numPlayers() {
-        return players.length;
-    }
-
-    public void postInitPlayers(TextField input) {
-        for (PlayerNode player : players) {
-            player.postInit(input);
-        }
-    }
-
-    public void posWordPlayer() {
-        for (PlayerNode player : players) {
-            Platform.runLater(player::posWord);
         }
     }
 
@@ -98,16 +101,6 @@ public class GameB {
         }
     }
 
-    public int getDeadSpaces() {
-        return deadSpaces;
-    }
-
-    public PlayerNode getWinner() {
-        calcDeadSpaces();
-        currentPlayer = (currentPlayer + deadSpaces) % players.length;
-        return players[currentPlayer];
-    }
-
     public void reset() {
         for (PlayerNode player : players) {
             player.reset();
@@ -116,5 +109,17 @@ public class GameB {
         wordTurns = 0;
         currentPlayer = 0;
         deadSpaces = 0;
+    }
+
+    public void postInitPlayers(TextField input) {
+        for (PlayerNode player : players) {
+            player.postInit(input);
+        }
+    }
+
+    public void posWordPlayer() {
+        for (PlayerNode player : players) {
+            Platform.runLater(player::posWord);
+        }
     }
 }
