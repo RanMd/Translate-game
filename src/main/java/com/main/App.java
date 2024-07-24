@@ -33,11 +33,11 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException{
-        final FXMLLoader loader = loadFXML("GameBView");
+        final FXMLLoader loader = loadFXML("GameAView");
         final Parent root = loader.load();
 
-        GameBController controller = loader.getController();
-        controller.initController(stage, Data.getRandomCategory());
+        GameAController controller = loader.getController();
+        controller.initController(stage);
 //        GameController controller = loader.getController();
 //        controller.initController(stage, Data.getRandomCategory());
 

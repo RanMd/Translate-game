@@ -24,14 +24,8 @@ import java.util.logging.Logger;
 import static com.main.App.loadFXML;
 
 public class WinnerAlertController implements Initializable {
-    private TranslateGame game;
     private Stage myStage;
-    private Category categoryGame;
-    private int maxRounds;
-    private final ArrayList<String> names = new ArrayList<>();
-
     private Player playerWinner;
-
 
     @FXML
     private JFXButton btnexit;
@@ -48,48 +42,18 @@ public class WinnerAlertController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        game = new TranslateGame();
         btnmenu.setOnAction(event -> changeToMenu());
-        btnretry.setOnAction(event -> reset());
         btnexit.setOnAction(event -> Platform.exit());
-
-
     }
 
-    public void initController(Stage stage, ArrayList<String> playersName,Player playerWinner, Category category, int maxRounds) {
+    public void initController(Stage stage ,Player playerWinner, Runnable onExit) {
         this.myStage = stage;
-        this.maxRounds = maxRounds;
-        this.categoryGame = category;
         this.playerWinner = playerWinner;
 
-        for (String playerName : playersName) {
-            Player jugador = new Player(playerName);
-            game.addPlayer(jugador);
-            names.add(playerName);
-        }
-
         actPlayer();
+        btnretry.setOnAction(event -> onExit.run());
     }
 
-    private void reset() {
-        try {
-            final FXMLLoader loader = loadFXML("GameAView");
-            final Parent root = loader.load();
-
-            final GameAController controller = loader.getController();
-
-            final Stage gameStage = new Stage();
-            gameStage.setScene(new Scene(root));
-            gameStage.setTitle("Game");
-
-            controller.initController(gameStage, names, categoryGame, maxRounds);
-
-            myStage.close();
-            gameStage.show();
-        } catch (IOException ex) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
-        }
-    }
     private void changeToMenu() {
         StageFlow.showStage("Menu");
         myStage.close();

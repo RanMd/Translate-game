@@ -28,6 +28,7 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
@@ -37,19 +38,13 @@ import java.util.logging.Logger;
 import static com.main.App.loadFXML;
 
 public class GameAController implements Initializable {
-    private Stage myStage;
     private Timeline timeline;
     private int timeSeconds = 0;
     private TranslateGame game;
-    private Category categoryGame;
-    private WordPair word;
-    private int turn;
-    private int cantRounds;
-    private int maxRounds;
-    private final ArrayList<String> names = new ArrayList<>();
+    private VBox winnerAlert;
+
     private final int MAX_CHARACTERS = 25;
     private final GaussianBlur gaussianBlur = new GaussianBlur();
-    private final Random rnd = new Random();
 
     @FXML
     private Label labelCategory;
@@ -70,13 +65,10 @@ public class GameAController implements Initializable {
     private TextField input;
 
     @FXML
-    private StackPane windowGame;
+    private StackPane stackContainer;
 
     @FXML
     private HBox playerCont;
-
-    @FXML
-    private VBox correctWord;
 
     @FXML
     private VBox infoPlayer;
@@ -84,16 +76,18 @@ public class GameAController implements Initializable {
     @FXML
     private Label correctLabel;
 
+    @FXML
+    private VBox correctWordCont;
+
+    @FXML
+    private VBox content;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        cantRounds = 0;
         labelTimer.setText("1");
-        turn = 0;
-        startTimer();
-        game = new TranslateGame();
-        correctWord.setVisible(false);
+        correctWordCont.setVisible(false);
 
-        windowGame.heightProperty().addListener((obs, oldVal, newVal) ->
+        stackContainer.heightProperty().addListener((obs, oldVal, newVal) ->
                 contInput.setMaxHeight(newVal.doubleValue() * 0.20));
 
         contInput.widthProperty().addListener((obs, oldVal, newVal) ->
@@ -113,48 +107,34 @@ public class GameAController implements Initializable {
     }
 
     private void pressEnter(KeyEvent event) {
-        if (event.getCode() != KeyCode.ENTER) {
-            return;
-        }
+        if (event.getCode() != KeyCode.ENTER) return;
         changePlayer();
     }
 
     public void initController(Stage stage) {
-        this.myStage = stage;
-        this.maxRounds = 5;
-        this.categoryGame = Data.getRandomCategory();
-        final int players = rnd.nextInt(4) + 2;
+        String[] playersArray = new String[2];
 
-        for (int i = 0; i < players; i++) {
-            final Player jugador = new Player("Jugador " + (i + 1));
-            game.addPlayer(jugador);
-            names.add(jugador.getNombre());
+        for (int i = 0; i < playersArray.length; i++) {
+            playersArray[i] = "Jugador " + (i + 1);
         }
 
-        labelCategory.setText(categoryGame.getName());
-        actPlayer();
-        word = categoryGame.getRandomWord();
-        actWord();
+        final Category category = Objects.requireNonNull(Data.getRandomCategory());
+        game = new TranslateGame(createPlayers(playersArray), category, 3);
+        initTimer(category);
     }
 
-    public void initController(Stage stage, ArrayList<String> playersName, Category category, int maxRounds) {
-        this.myStage = stage;
-        this.maxRounds = maxRounds;
-        this.categoryGame = category;
+    public void initController(Stage stage, String[] playersName, Category category, int maxRounds) {
+        game = new TranslateGame(createPlayers(playersName), category, maxRounds);
 
-        for (String playerName : playersName) {
-            final Player jugador = new Player(playerName);
-            game.addPlayer(jugador);
-            names.add(playerName);
-        }
-
-        labelCategory.setText(categoryGame.getName());
-        actPlayer();
-        word = categoryGame.getRandomWord();
-        actWord();
+        initTimer(category);
     }
 
-    private void startTimer() {
+    private void initTimer(Category category) {
+        actPlayer();
+        actWord();
+
+        labelCategory.setText(category.getName());
+
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
             timeSeconds++;
             labelTimer.setText(Integer.toString(timeSeconds));
@@ -163,171 +143,87 @@ public class GameAController implements Initializable {
         timeline.play();
     }
 
-
-    private String formatTime(int seconds) {
-        int minutes = seconds / 60;
-        int secs = seconds % 60;
-        return String.format("%02d:%02d", minutes, secs);
-    }
-
-    public void stopTimer() {
-        if (timeline != null) {
-            timeline.stop();
+    private Player[] createPlayers(String[] playersName) {
+        final Player[] players = new Player[playersName.length];
+        for (int i = 0; i < playersName.length; i++) {
+            players[i] = new Player(playersName[i]);
         }
+        return players;
     }
 
     public void resetTimer() {
-        stopTimer();
         timeSeconds = 0;
-        labelTimer.setText("0");
-        System.out.println("Timer reset to: " + formatTime(timeSeconds));
-        startTimer();
+        labelTimer.setText("1");
+        timeline.playFromStart();
     }
 
     public void actPlayer() {
-        Player jugador = game.getPlayers().get(turn);
-        labelPlayer.setText(jugador.getNombre());
+        labelPlayer.setText(game.getCurrentPlayer().getNombre());
     }
 
     public void actWord() {
-        labelWord.setText(word.getWord());
+        game.changeWord();
+        labelWord.setText(game.getCurrentWord().getWord());
     }
 
     public void changePlayer() {
-        if (cantRounds != -1) {
-            if (word.checkTranslate(input.getText())) {
-                game.getPlayers().get(turn).setPuntajeTiempo(timeSeconds);
+        final boolean isCorrect = game.getCurrentWord().checkTranslate(input.getText());
+        if (!isCorrect) {
+            input.setDisable(true);
+            infoPlayer.setEffect(gaussianBlur);
+            Animations.playShakeAnimation(playerCont); // esto queda pa arreglar debe ser el player no el cont
+            correctWordCont.setVisible(true);
+            correctLabel.setText(game.getCurrentWord().getCorrectWord());
 
-                if (turn >= game.getPlayers().size() - 1) {
-                    turn = 0;
-                    cantRounds++;
-                }
-                else if(turn < game.getPlayers().size() - 1) {
-                    turn++;
-                }
-                if (cantRounds >= maxRounds) {
-                    stopTimer();
-                    cantRounds--;
-                    changeWinnerAlert();
+            Animations.playSwipeAnimation(correctWordCont, () -> {
+                input.setDisable(false);
+                infoPlayer.setEffect(null);
+                correctWordCont.setVisible(false);
+                actWord();
+            });
+        }
 
-                } else {
-                    word = categoryGame.getRandomWord();
-                    input.setText("");
-                    actWord();
-                    resetTimer();
-                    actPlayer();
-                }
-                actPlayer();
-            } else {
-                game.getPlayers().get(turn).incrementarErrores();
-                input.setText("");
-                input.setDisable(true);
-                infoPlayer.setEffect(gaussianBlur);
-                Animations.playShakeAnimation(playerCont);
-                Assets.incorrectSound.play();
-                correctWord.setVisible(true);
-                correctLabel.setText(word.getCorrectWord());
+        game.playerAnswered(isCorrect, timeSeconds);
+        if (isCorrect) actWord();
+        input.clear();
 
-                Animations.playSwipeAnimation(correctWord, () -> {
-                    input.setDisable(false);
-                    infoPlayer.setEffect(null);
-                    correctWord.setVisible(false);
-                    actWord();
-                });
-                actPlayer();
-            }
+        if (!game.isEndGame()) {
+            game.nextPlayerTurn();
+
             actPlayer();
-        } else {
-           changeWinnerAlert();
-        }
+            resetTimer();
+        } else choseWinner();
 
     }
 
-
-    private void showPoints() {
-        final StringBuilder points = new StringBuilder();
-        for (Player jugador : game.getPlayers()) {
-            points.append(jugador.getNombre()).append(": ").append("Tiempo acumulado: "+jugador.getPuntajeTiempo()).append("  Errores:  "+jugador.getErrores()).append("\n");
-        }
-
-        final Player ganador = game.playerWinner();
-        String mensajeFinal = points.toString() + "\nGanador con menor tiempo: " + (ganador != null ? ganador.getNombre() : "N/A")+"\n Cantidad de errores: "+(ganador != null ? ganador.getErrores() : "N/A");
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Puntajes Finales");
-        alert.setHeaderText(null);
-        alert.setContentText(mensajeFinal);
-
-        ButtonType okButton = new ButtonType("SALIR AL MENU", ButtonBar.ButtonData.OK_DONE);
-        ButtonType repetirButton = new ButtonType("REPETIR", ButtonBar.ButtonData.OK_DONE);
-
-        alert.getButtonTypes().setAll(okButton, repetirButton);
-
-        Button ok = (Button) alert.getDialogPane().lookupButton(okButton);
-        ok.setOnAction(event -> {
-            changeToMenu();
-            alert.close();
-        });
-
-        Button repetir = (Button) alert.getDialogPane().lookupButton(repetirButton);
-        repetir.setOnAction(event -> {
-            reset();
-            alert.close();
-        });
-
-        alert.showAndWait();
-    }
-
-
-    private void changeToMenu() {
-        StageFlow.showStage("Menu");
-        myStage.close();
-    }
-
-    private void reset() {
-        try {
-            final FXMLLoader loader = loadFXML("GameAView");
-            final Parent root = loader.load();
-
-            final GameAController controller = loader.getController();
-
-            final Stage gameStage = new Stage();
-            gameStage.setScene(new Scene(root));
-            gameStage.setTitle("Game");
-
-            controller.initController(gameStage, names, categoryGame, maxRounds);
-
-            myStage.close();
-            gameStage.show();
-        } catch (IOException ex) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
-        }
+    private void choseWinner() {
+        timeline.stop();
+        changeWinnerAlert();
     }
 
     private void changeWinnerAlert() {
-        try {
+        if (winnerAlert == null) {
+            try {
+                final FXMLLoader loader = loadFXML("WinnerAlert");
+                final Parent root = loader.load();
+                winnerAlert = (VBox) root;
+                final WinnerAlertController controller = loader.getController();
 
-            final FXMLLoader loader = loadFXML("WinnerAlert");
-            final Parent root = loader.load();
+                final Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Game");
 
-            final WinnerAlertController controller = loader.getController();
-
-            final Stage gameStage = new Stage();
-            gameStage.setScene(new Scene(root));
-            gameStage.setTitle("Game");
-
-            controller.initController(gameStage, names,game.playerWinner() ,categoryGame, maxRounds);
-
-            myStage.close();
-            gameStage.show();
-        } catch (IOException ex) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+                controller.initController(stage, game.playerWinner(), this::backToGame);
+                stackContainer.getChildren().add(winnerAlert);
+            } catch (IOException ex) {
+                Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+            }
         }
+
+        StageFlow.playSwipe(content, winnerAlert, StageFlow.Direction.DOWN);
     }
 
-
-
-
-
-
+    private void backToGame() {
+        StageFlow.playSwipe(winnerAlert, content, StageFlow.Direction.UP);
+    }
 }

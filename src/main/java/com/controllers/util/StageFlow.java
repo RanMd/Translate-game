@@ -53,7 +53,10 @@ public class StageFlow {
         toView.setVisible(true); // Show the node
         swipeFrom.setNode(fromView);
         swipeTo.setNode(toView);
-        swipe.setOnFinished(event -> toView.toFront());
+        swipe.setOnFinished(event -> {
+            toView.toFront();
+            swipe.setNode(null);
+        });
 
         setSwipeDirection(direction);
 

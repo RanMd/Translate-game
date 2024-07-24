@@ -127,10 +127,10 @@ public class PlayersAController implements Initializable {
     }
 
     private void startGame() {
-        final ArrayList<String> playerNames = new ArrayList<>();
+        final String[] playerNames = new String[cardPane.getChildren().size()];
 
-        for (Node node : cardPane.getChildren()) {
-            playerNames.add(((PlayerCardNode) node).getPlayerName());
+        for (int i = 0; i < playerNames.length; i++) {
+            playerNames[i] = ((PlayerCardNode) cardPane.getChildren().get(i)).getPlayerName();
         }
 
         try {

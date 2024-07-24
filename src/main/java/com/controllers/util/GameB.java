@@ -102,9 +102,8 @@ public class GameB {
     }
 
     public void reset() {
-        for (PlayerNode player : players) {
-            player.reset();
-        }
+        for (PlayerNode player : players) player.reset();
+
         survivors = players.length;
         wordTurns = 0;
         currentPlayer = 0;

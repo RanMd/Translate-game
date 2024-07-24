@@ -3,43 +3,53 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import java.net.URL?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="657.0" styleClass="container" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.controllers.WinnerAlertController">
    <stylesheets>
       <URL value="@../styles/game_style.css" />
    </stylesheets>
    <children>
-      <AnchorPane prefHeight="69.0" prefWidth="657.0">
+      <VBox alignment="CENTER">
          <children>
-            <Label alignment="CENTER" layoutX="213.0" layoutY="9.0" prefHeight="43.0" prefWidth="231.0" text="GANADOR!">
+            <Label alignment="CENTER" prefHeight="43.0" prefWidth="231.0" text="GANADOR!">
                <font>
-                  <Font size="35.0" />
+                  <Font size="25.0" />
                </font>
             </Label>
-         </children></AnchorPane>
-      <AnchorPane prefHeight="313.0" prefWidth="657.0">
+         </children>
+      </VBox>
+      <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
          <children>
-            <ImageView fitHeight="131.0" fitWidth="142.0" layoutX="259.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../fonts/perfil.jpg" />
-               </image></ImageView>
-            <Label fx:id="labelname" alignment="CENTER" layoutX="246.0" layoutY="155.0" prefHeight="31.0" prefWidth="167.0" text="NAME">
-               <font>
-                  <Font size="24.0" />
-               </font>
-            </Label>
-            <Label layoutX="263.0" layoutY="197.0" text="Gano la ultima ronda!" />
-         </children></AnchorPane>
-      <AnchorPane prefHeight="81.0" prefWidth="657.0">
+            <HBox alignment="CENTER">
+               <children>
+                  <VBox alignment="CENTER">
+                     <children>
+                        <HBox alignment="CENTER" styleClass="icon-container-winner">
+                           <children>
+                              <FontIcon iconLiteral="bi-hourglass-top" iconSize="90" />
+                           </children>
+                        </HBox>
+                        <Label fx:id="labelname" alignment="CENTER" prefHeight="31.0" prefWidth="167.0" text="NAME">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <HBox alignment="CENTER">
          <children>
-            <JFXButton fx:id="btnmenu" layoutX="169.0" layoutY="14.0" styleClass="btn" text="Menu" />
-            <JFXButton fx:id="btnretry" layoutX="307.0" layoutY="14.0" styleClass="btn" text="Repetir" />
-            <JFXButton fx:id="btnexit" layoutX="446.0" layoutY="14.0" styleClass="btn-exit" text="Salir" />
-         </children></AnchorPane>
+            <JFXButton fx:id="btnretry" styleClass="btn" text="Repetir" />
+            <JFXButton fx:id="btnmenu" styleClass="btn" text="Menu" />
+            <JFXButton fx:id="btnexit" styleClass="btn-exit" text="Salir" />
+         </children>
+      </HBox>
    </children>
 </VBox>
