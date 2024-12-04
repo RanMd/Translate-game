@@ -1,7 +1,5 @@
 package com.main;
 
-import com.controllers.GameAController;
-import com.controllers.GameBController;
 import com.controllers.MenuViewController;
 import com.controllers.util.Animations;
 import com.controllers.util.StageFlow;
@@ -33,13 +31,11 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException{
-        final FXMLLoader loader = loadFXML("GameAView");
+        final FXMLLoader loader = loadFXML("MenuView");
         final Parent root = loader.load();
 
-        GameAController controller = loader.getController();
+        MenuViewController controller = loader.getController();
         controller.initController(stage);
-//        GameController controller = loader.getController();
-//        controller.initController(stage, Data.getRandomCategory());
 
         final Scene scene = new Scene(root);
         stage.setScene(scene);
