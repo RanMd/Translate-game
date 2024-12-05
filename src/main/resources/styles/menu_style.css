@@ -18,6 +18,10 @@
     -fx-text-fill: white;
 }
 
+.title {
+    -fx-font-size: 75;
+}
+
 .container .btn {
     -fx-background-color: -fx-bg-btn;
     -fx-padding: 8;
@@ -28,3 +32,6 @@
     -fx-padding: 10;
 }
 
+.btn-play {
+    -fx-font-size: 45;
+}
