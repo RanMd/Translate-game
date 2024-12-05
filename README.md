@@ -19,14 +19,9 @@ git clone https://github.com/RanMd/translate-game.git
 cd translate-game
 ```
 
-Compila el proyecto:
+Ejecuta el proyecto:
 ``` bash
-javac -d bin src/*.java
-```
-
-Ejecuta el juego:
-``` bash
-java -cp bin Main
+mvn clean javafx:run
 ```
 
 Tecnologías Utilizadas
